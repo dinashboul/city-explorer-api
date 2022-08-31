@@ -5,6 +5,7 @@
 ## Overview
 
 It is a custom API contains the data for three cities and their crossponding weather conditions retrieved from specific data.
+and now give the user information about weathes, movies.
 
 ## Getting Started
 

@@ -1,65 +1,83 @@
-const express = require('express');
+"use strict";
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
 const server = express();
-const cors = require('cors');
-const weatherdata = require('./data/data.json');
-// port
-
+const weatherData = require("./data/data.json");
+server.use(cors());
 const PORT = 3001;
-server.use(cors()); // make the server opened for any request
 
-//http://localhost:3001/
-server.get('/',(req,res)=>{
-    res.send('Hi from the home route');
-})
+const axios = require("axios");
 
+server.get('/movie', getMovieDataFunction);
 
-//http://localhost:3001/test1
-server.get('/test1',(req,res)=>{
-    res.send('Hi From Test Route');
-})
-
-//http://localhost:3001/NameOfCity
-server.get('/NameOfCity',(req,res)=>{
-  let weatherCloud=weatherdata.map((item)=>{
-    return item["city_name"];
-  })
-  res.send(weatherCloud);
-})
-
-//http://localhost:3001/LatOfCity
-server.get('/LatOfCity',(req,res)=>{
-  let weatherCloud=weatherdata.map((item)=>{
-    return item["Lat"];
-  })
-  res.send(weatherCloud);
-})
-
-//http://localhost:3001/LonOfCity
-server.get('/LonOfCity',(req,res)=>{
-  let weatherCloud=weatherdata.map((item)=>{
-    return item["lon"];
-  })
-  res.send(weatherCloud);
-
-})
-//http://localhost:3001/getWeatherData
-
-server.get('/getWeatherData',(req,res) => {
-  let weatherCloudResult=weatherdata.find((item)=>{
-     if(item.lat === req.query.lat && item.lon === req.query.lon)
-     {
-      if(req.query.name === "Amman"){
-        return res.send(Forcast.amman);
-    } else if (req.query.name === "Paris"){
-        return res.send(Forcast.paris);
-    } else if (req.query.name === "Seattle"){
-        return res.send(Forcast.seattle);
-    } 
-} 
-})
-res.send(weatherCloudResult);
+server.get("/", (req, res) => {
+  res.send("Hi from the home route");
+  console.log("Hi from the home route");
 });
 
-server.get('*',(req,res)=>{
-  res.send("404");
-})
+
+// http://localhost:3000/test
+server.get("/test", (req, res) => {
+  res.send("Hi from the test route");
+
+});
+
+
+
+// http://localhost:3001/weather
+server.get("/weather", (req, res) => {
+  let information = weatherData.map((item) => {
+    return item.data;
+  });
+     
+  let des = {};
+  let weather = information.map((item) => {
+    let myArray = item.map((item2) => {
+      des.weather = item2.weather;
+      des.datetime = item2.datetime;
+
+      return des;
+    });
+    return myArray;
+  });
+
+  res.send(weather);
+});
+
+//class07
+//http://localhost:3001/Forcast?name=cityName
+
+server.get("/Forcast", (req, res) => {
+  // let lat = req.query.lat;
+  // let lon = req.query.lon;
+  let cityName = req.query.name;
+  console.log( cityName);
+
+  let data1 = weatherData.find((item) => {
+    console.log((item.city_name === cityName),"the city is ");
+
+    if (
+      (item.city_name === cityName)
+    ) {
+      return true;
+    }
+  });
+
+  let finalResult = {};
+  
+  let weatherOfData = data1.data.map((item) => {
+    finalResult.description = item.weather.description;
+    finalResult.valid_date = item.valid_date;
+    console.log(finalResult);
+
+    return { ...finalResult };
+  });
+  console.log(weatherOfData);
+
+  res.send(weatherOfData);
+});
+
+server.listen(PORT, () => {
+  console.log(`Hello, I am listening on ${PORT}`);
+});

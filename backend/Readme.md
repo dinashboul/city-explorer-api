@@ -18,7 +18,7 @@ Architecture
 ![workFlow](./lab7.jpg)
 
 ## Change Log
-29-08-2022 12:1am - Application now isn't complete.
+31-08-2022 12:1am - Application now isn't complete.
 
 ## Credit and Collaborations
  
@@ -30,8 +30,8 @@ Name of feature : Express Server/API
 
 Estimate of time needed to complete : 6 hours
 
-Start time : 3:30pm
+Start time : 3:00pm
 
 Finish time : 12:00am
 
-Actual time needed to complete : 8,30 hours
+Actual time needed to complete :9 hours

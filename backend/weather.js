@@ -1,53 +1,34 @@
-async function weatherFunction(req,res) {
-    let information = weatherData.map((item) => {
-      return item.data;
-    });
-       
-    let des = {};
-    let weather = information.map((item) => {
-      let myArray = item.map((item2) => {
-        des.weather = item2.weather;
-        des.datetime = item2.datetime;
-  
-        return des;
-      });
-      return myArray;
-    });
-  
-    res.send(weather);
-  }
-  
+const axios = require('axios');
 
-  //http://localhost:3001/Forcast?name=cityName
-  
-  server.get("/Forcast", (req, res) => {
-    // let lat = req.query.lat;
-    // let lon = req.query.lon;
-    let cityName = req.query.name;
-    console.log( cityName);
-  
-    let data1 = weatherData.find((item) => {
-      console.log((item.city_name === cityName),"the city is ");
-  
-      if (
-        (item.city_name === cityName)
-      ) {
-        return true;
-      }
-    });
-  
-    let finalResult = {};
+//----- FUNCTIONS -----//
+
+// Get Weather Data Function
+async function getWeatherDataFunction(req,res) {
+    const lon = req.query.lon;
+    const lat = req.query.lat;
+    const URL = `http://api.weatherbit.io/v2.0/forecast/daily?key=30bac79a94f349f4a71dbac33b4ffdb9&lon=${lon}&lat=${lat}`;
     
-    let weatherOfData = data1.data.map((item) => {
-      finalResult.description = item.weather.description;
-      finalResult.valid_date = item.valid_date;
-      console.log(finalResult);
-  
-      return { ...finalResult };
-    });
-    console.log(weatherOfData);
-  
-    res.send(weatherOfData);
-  });
+    axios.get(URL).then( result => {
+        let sendData = result.data.data.map( item => {
+            return new WeatherData(item);
+        })
+        return res.status(200).send(sendData);
+    }).catch(error => {
+        return res.status(404).send(error)
+    })
+}
 
-  module.exports = weatherFunction;
+//----- CLASSES -----//
+
+// Weather Class
+
+class WeatherData {
+    constructor(item){
+        this.datetime = item.datetime;
+        this.low_temp = item.low_temp;
+        this.max_temp = item.max_temp;
+        this.description = item.weather.description;
+    }
+}
+
+module.exports = getWeatherDataFunction;

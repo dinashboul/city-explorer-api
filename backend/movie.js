@@ -1,0 +1,41 @@
+
+const axios = require('axios');
+
+const myStorage = {};
+
+async function getMovieDataFunction(req,res) {
+    const cityName = req.query.cityName;
+    const URL = `https://api.themoviedb.org/3/search/movie?api_key=${process.env}&query=${cityName}`;
+    
+    if (myStorage[cityName]){
+        console.log("I have the data!")
+        res.status(200).send(myStorage[cityName]);
+    }else {
+        axios.get(URL).then( result => {
+            let sendData = result.data.results.map( item => {
+                return new Movieobj(item);
+            })
+            myStorage[cityName] = sendData;
+            console.log("I don't have the data!")
+            return res.status(200).send(sendData);
+        }).catch(error => {
+            return res.status(404).send(error)
+        })
+    }}
+
+
+
+
+
+class Movieobj {
+    constructor(item){
+        this.title = item.title;
+        this.overview = item.overview;
+        this.vote_average = item.vote_average;
+        this.vote_count = item.vote_count;
+        this.popularity = item.popularity;
+        this.release_date = item.release_date;
+    }
+}
+
+module.exports = getMovieDataFunction;
